@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
-import { Shuffle, ArrowRight, Heart, Users, Plus, Timer, X, Trash2, Check, ChevronDown } from "lucide-react";
+import { Shuffle, ArrowRight, ArrowLeft, Heart, Users, Plus, Timer, X, Trash2, Check, ChevronDown } from "lucide-react";
 
 interface Question {
   id: number;
@@ -125,11 +125,15 @@ let customIdCounter = BASE_QUESTIONS.length;
 export default function IcebreakerV2() {
   const [active, setActive]           = useState<Set<string>>(new Set(Object.keys(CATEGORIES)));
   const [allQs, setAllQs]             = useState<Question[]>(BASE_QUESTIONS);
-  const [current, setCurrent]         = useState<Question | null>(null);
+  const [history, setHistory]         = useState<Question[]>([]);
+  const [historyIdx, setHistoryIdx]   = useState(-1);
   const [flipped, setFlipped]         = useState(false);
   const [drawCount, setDrawCount]     = useState(0);
   const usedRef  = useRef(new Set<number>());
   const lockRef  = useRef(false);
+
+  const current   = historyIdx >= 0 ? history[historyIdx] : null;
+  const canGoBack = historyIdx > 0;
 
   const [favs, setFavs]               = useState<Question[]>([]);
   const [playerMode, setPlayerMode]   = useState(1);
@@ -166,21 +170,41 @@ export default function IcebreakerV2() {
     if (!avail.length) { usedRef.current = new Set(); avail = [...pool]; }
     const next = avail[Math.floor(Math.random() * avail.length)];
     usedRef.current.add(next.id);
-    const reveal = (q: Question) => {
-      setCurrent(q); setDrawCount(c => c + 1);
+    const reveal = (_q: Question, newIdx: number, newHistory: Question[]) => {
+      setHistory(newHistory);
+      setHistoryIdx(newIdx);
+      setDrawCount(c => c + 1);
       if (playerMode === 2) setCurPlayer(p => 1 - p);
       requestAnimationFrame(() => setFlipped(true));
       startTimer();
       setTimeout(() => (lockRef.current = false), 650);
     };
-    if (!flipped) { reveal(next); }
-    else { setFlipped(false); stopTimer(); setTimeout(() => reveal(next), 320); }
+    const newHistory = [...history.slice(0, historyIdx + 1), next];
+    const newIdx     = historyIdx + 1;
+    if (!flipped) { reveal(next, newIdx, newHistory); }
+    else { setFlipped(false); stopTimer(); setTimeout(() => reveal(next, newIdx, newHistory), 320); }
+  };
+
+  const goBack = () => {
+    if (!canGoBack || lockRef.current) return;
+    lockRef.current = true;
+    setFlipped(false); stopTimer();
+    setTimeout(() => {
+      setHistoryIdx(i => i - 1);
+      setDrawCount(c => c + 1);
+      requestAnimationFrame(() => setFlipped(true));
+      startTimer();
+      setTimeout(() => (lockRef.current = false), 650);
+    }, 320);
   };
 
   const reset = () => {
     if (lockRef.current) return;
     setFlipped(false); stopTimer();
-    setTimeout(() => { setCurrent(null); usedRef.current = new Set(); setDrawCount(0); setCurPlayer(0); }, 320);
+    setTimeout(() => {
+      setHistory([]); setHistoryIdx(-1);
+      usedRef.current = new Set(); setDrawCount(0); setCurPlayer(0);
+    }, 320);
   };
 
   const toggleCat = (k: string) => setActive(prev => {
@@ -314,6 +338,11 @@ export default function IcebreakerV2() {
       </div>
 
       <div style={r.btns}>
+        {canGoBack && (
+          <button onClick={goBack} className="g-btn g-btn-ghost">
+            <ArrowLeft size={15} strokeWidth={2} /> Back
+          </button>
+        )}
         <button onClick={draw} className="g-btn g-btn-primary">
           {current ? "Next card" : "Draw a card"}
           <ArrowRight size={16} strokeWidth={2.4} />
