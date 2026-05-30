@@ -273,7 +273,7 @@ export default function IcebreakerV2() {
                       </span>
                     )}
                     <button className="g-heartbtn" onClick={e => toggleFav(e, current)}
-                      style={{ color: isFav ? "#e11d48" : "rgba(26,22,34,0.28)" }}>
+                      style={{ color: isFav ? "#e11d48" : "rgba(245,241,234,0.3)" }}>
                       <Heart size={19} fill={isFav ? "#e11d48" : "none"} strokeWidth={2} />
                     </button>
                   </div>
@@ -284,7 +284,7 @@ export default function IcebreakerV2() {
                     {timerDur > 0 ? (
                       <div style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}>
                         <svg width={52} height={52} style={{ transform: "rotate(-90deg)", display: "block" }}>
-                          <circle cx={26} cy={26} r={22} fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth={3.5} />
+                          <circle cx={26} cy={26} r={22} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={3.5} />
                           <circle cx={26} cy={26} r={22} fill="none"
                             stroke={timerDone ? "#e11d48" : cat.color} strokeWidth={3.5}
                             strokeDasharray={CIRC} strokeDashoffset={dashOff}
@@ -292,12 +292,12 @@ export default function IcebreakerV2() {
                             style={{ transition: timerOn ? "stroke-dashoffset 0.95s linear" : "none" }}
                           />
                         </svg>
-                        <span className="g-timernum" style={{ color: timerDone ? "#e11d48" : "rgba(26,22,34,0.7)" }}>
+                        <span className="g-timernum" style={{ color: timerDone ? "#e11d48" : "rgba(245,241,234,0.8)" }}>
                           {timerDone ? "✓" : timerLeft}
                         </span>
                       </div>
                     ) : (
-                      <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", color: "rgba(26,22,34,0.38)" }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", color: "rgba(245,241,234,0.38)" }}>
                         No.&nbsp;{String(drawCount).padStart(2, "0")}
                       </span>
                     )}
@@ -323,27 +323,27 @@ export default function IcebreakerV2() {
         </button>
       </div>
 
-      <div style={r.toolbar}>
+      <div style={r.footer}>{pool.length} questions · {active.size} topic{active.size !== 1 ? "s" : ""}</div>
+
+      <nav style={r.navbar}>
         <button className="g-tool" onClick={() => setPanel(p => p === "favs" ? null : "favs")}>
-          <Heart size={16} fill={favs.length ? "#e11d48" : "none"}
+          <Heart size={20} fill={favs.length ? "#e11d48" : "none"}
             stroke={favs.length ? "#e11d48" : "rgba(245,241,234,0.5)"} strokeWidth={2} />
           <span>{favs.length ? `Saved (${favs.length})` : "Saved"}</span>
         </button>
         <button className="g-tool" onClick={() => setPanel(p => p === "players" ? null : "players")}>
-          <Users size={16} stroke={playerMode === 2 ? p1color : "rgba(245,241,234,0.5)"} strokeWidth={2} />
+          <Users size={20} stroke={playerMode === 2 ? p1color : "rgba(245,241,234,0.5)"} strokeWidth={2} />
           <span>Players</span>
         </button>
         <button className="g-tool" onClick={() => setPanel(p => p === "add" ? null : "add")}>
-          <Plus size={16} stroke="rgba(245,241,234,0.5)" strokeWidth={2} />
+          <Plus size={20} stroke="rgba(245,241,234,0.5)" strokeWidth={2} />
           <span>Add Q</span>
         </button>
         <button className="g-tool" onClick={() => setPanel(p => p === "timer" ? null : "timer")}>
-          <Timer size={16} stroke={timerDur ? "#d97706" : "rgba(245,241,234,0.5)"} strokeWidth={2} />
-          <span>{timerDur ? `Timer ${timerDur}s` : "Timer"}</span>
+          <Timer size={20} stroke={timerDur ? "#d97706" : "rgba(245,241,234,0.5)"} strokeWidth={2} />
+          <span>{timerDur ? `${timerDur}s` : "Timer"}</span>
         </button>
-      </div>
-
-      <div style={r.footer}>{pool.length} questions · {active.size} topic{active.size !== 1 ? "s" : ""}</div>
+      </nav>
 
       {panel === "favs" && (
         <div className="g-backdrop" onClick={() => setPanel(null)}>
@@ -491,7 +491,7 @@ const r: Record<string, React.CSSProperties> = {
     background: "radial-gradient(120% 90% at 50% 0%, #24203a 0%, #181525 50%, #0f0d1b 100%)",
     color: "#f5f1ea", fontFamily: "'Archivo',sans-serif",
     display: "flex", flexDirection: "column", alignItems: "center",
-    padding: "clamp(20px,5vw,50px) 20px 36px", position: "relative", overflow: "hidden",
+    padding: "clamp(20px,5vw,50px) 20px 100px", position: "relative", overflow: "hidden",
   },
   hdr:    { textAlign: "center", maxWidth: 520, zIndex: 2 },
   eyebrow:{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase",
@@ -509,11 +509,17 @@ const r: Record<string, React.CSSProperties> = {
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "18px 0 6px", zIndex: 2 },
   btns:   { display: "flex", gap: 12, marginTop: 12, zIndex: 2 },
-  toolbar:{ display: "flex", gap: 2, marginTop: 18,
-            background: "rgba(255,255,255,0.05)", borderRadius: 999, padding: "5px 8px",
-            border: "1px solid rgba(255,255,255,0.1)", zIndex: 2 },
-  footer: { marginTop: 18, fontSize: 11.5, letterSpacing: "0.05em",
+  footer: { marginTop: 14, fontSize: 11.5, letterSpacing: "0.05em",
             color: "rgba(245,241,234,0.32)", zIndex: 2 },
+  navbar: {
+    position: "fixed", bottom: 0, left: 0, right: 0,
+    display: "flex", justifyContent: "space-around", alignItems: "center",
+    background: "rgba(18,15,28,0.92)", backdropFilter: "blur(16px)",
+    borderTop: "1px solid rgba(255,255,255,0.08)",
+    paddingTop: 8,
+    paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 8px)",
+    zIndex: 50,
+  },
 };
 
 const CSS = `
@@ -569,8 +575,8 @@ const CSS = `
 .g-panelhint{font-size:12.5px;color:rgba(245,241,234,.4);line-height:1.5;margin:10px 0 0;}
 
 .g-front{transform:rotateY(180deg);
-  background:linear-gradient(165deg,#fdfaf6 0%,#f3ede2 100%);
-  color:#1a1622;border:1px solid rgba(0,0,0,.05);
+  background:linear-gradient(150deg,#2e2848 0%,#1c1a30 100%);
+  color:#f5f1ea;border:1px solid rgba(255,255,255,.08);
   box-shadow:0 28px 56px -20px rgba(0,0,0,.7);
   padding:28px 24px 22px;display:flex;flex-direction:column;}
 .g-front.g-timeblink{animation:gtimeblink .6s ease 3;}
@@ -587,13 +593,13 @@ const CSS = `
   padding:4px;border-radius:50%;line-height:0;transition:transform .15s ease;}
 .g-heartbtn:hover{transform:scale(1.2);}
 
-.g-question{font-family:'Fraunces',serif;font-weight:500;
+.g-question{font-family:'Fraunces',serif;font-weight:500;color:#f5f1ea;
   font-size:clamp(20px,5.6vw,26px);line-height:1.28;margin:auto 0;
   letter-spacing:-.012em;animation:gqin .45s .1s both ease;}
 @keyframes gqin{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 
 .g-bottom{display:flex;align-items:center;justify-content:space-between;
-  border-top:1px solid rgba(0,0,0,.08);padding-top:12px;margin-top:12px;}
+  border-top:1px solid rgba(255,255,255,.1);padding-top:12px;margin-top:12px;}
 .g-timernum{position:absolute;inset:0;display:flex;align-items:center;
   justify-content:center;font-size:14px;font-weight:700;font-family:'Archivo',sans-serif;}
 
@@ -608,9 +614,9 @@ const CSS = `
 .g-btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.35);}
 .g-btn:active{transform:scale(.97);}
 
-.g-tool{display:flex;flex-direction:column;align-items:center;gap:3px;
-  background:none;border:none;cursor:pointer;padding:8px 12px;border-radius:12px;
-  transition:background .14s ease;font-family:'Archivo',sans-serif;}
+.g-tool{display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;cursor:pointer;padding:6px 18px;border-radius:12px;
+  transition:background .14s ease;font-family:'Archivo',sans-serif;flex:1;}
 .g-tool:hover{background:rgba(255,255,255,.07);}
 .g-tool>span{font-size:10px;letter-spacing:.06em;font-weight:600;
   color:rgba(245,241,234,.5);text-transform:uppercase;}
